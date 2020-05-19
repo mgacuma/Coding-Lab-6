@@ -44,8 +44,10 @@ bool wordPairs::sentenceSplitter(string& fname, vector<string>& sentences) {
 						sentence = sentence + line.at(i);
 						quoteMode = false;
 
-						sentences.push_back(sentence);
-						sentence.clear();
+						if(line.at(i-1) == '.' || line.at(i - 1) == '?'){
+							sentences.push_back(sentence);
+							sentence.clear();
+						}
 						i++;
 					}
 					else {
@@ -59,6 +61,10 @@ bool wordPairs::sentenceSplitter(string& fname, vector<string>& sentences) {
 				{
 					if (quoteMode) {
 						sentence = sentence + line.at(i);
+						if (line.at(i - 1) == 'y') {
+							sentences.push_back(sentence);
+							sentence.clear();
+						}
 					}
 
 					else {
@@ -91,7 +97,7 @@ bool wordPairs::sentenceSplitter(string& fname, vector<string>& sentences) {
 				{
 					if (i == line.size()-1) {
 						sentence = sentence + line.at(i);
-						;
+						
 
 						sentences.push_back(sentence);
 						sentence.clear();
@@ -115,7 +121,7 @@ bool wordPairs::sentenceSplitter(string& fname, vector<string>& sentences) {
 	for (int i = 0; i < sentences.size(); i++) {
 		sentence = sentences.at(i);
 		
-		transform(sentences.at(i).begin(),sentences.at(i).end(), sentences.at(i).begin(),[](unsigned char c) { return tolower(c); });
+		//transform(sentences.at(i).begin(),sentences.at(i).end(), sentences.at(i).begin(),[](unsigned char c) { return tolower(c); });
 		
 		if (sentence.at(0) == ' ') {
 			sentence.erase(0, 1);
@@ -123,18 +129,24 @@ bool wordPairs::sentenceSplitter(string& fname, vector<string>& sentences) {
 
 		for (int j = 0; j < sentence.size(); j++) {
 			if (sentences.at(i).at(j) == '.' || sentences.at(i).at(j) == '?' || sentences.at(i).at(j) == '"' || sentences.at(i).at(j) == ':' || sentences.at(i).at(j) == '\n' || sentences.at(i).at(j) == ',') {
-				sentences.at(i).at(j) = '\0';
+				sentences.at(i).at(j) = ' ';
 			}
 		}
+
+		int val = sentence.at(sentence.size() - 1);
+		int pval = sentence.at(sentence.size() - 2);
+		cout << pval << " " << val << " is the ASCII. " << endl;
+
 	}
 
+	
 
 	//PRINT SENTENCES
 
-	/*cout << endl << endl << "SENTENCES VECTOR" << endl << endl;
+	cout << endl << endl << "SENTENCES VECTOR" << endl << endl;
 	for (int i = 0; i < sentences.size(); i++) {
-		cout << i+1 << ". " <<  sentences.at(i) << " " << sentences.at(i).size() << endl;
-	}*/
+		cout << i << ". " <<  sentences.at(i) << " " <<  endl;
+	}
 
 	in.close();
 	b = true;
@@ -229,6 +241,8 @@ bool wordPairs::wordpairMapping(vector<string>& sentences, map< pair< string, st
 		pair<string, string> key = it->first;
 		cout << "< " << key.first << " , " << key.second << "> : " << it->second << endl;
 	}
+
+	this->sentences = sentences;
 	
 	cout << wordpairFreq_map.size() << endl;
 	return b = true;
